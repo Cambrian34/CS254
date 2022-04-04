@@ -5,108 +5,113 @@
 ## Programmer: Alistair Chambers
 ## Date: 04/03/22
 ##Register use:
-##          r7= n
-##          r8=count
+##          r7=user input of max
+##          r8=counter
 ##          r9=scratch
-##          r10=base register
-##          r11=2, value used to divide n by
-##          r12=floor
-##          r13=remainder
-##          r14= evensum += count
-##          r15= oddsum += count
-##          r16=0 used to check if count number is even
-##
+##          r11=user input initial value,rand
+##          r12=21
+##          r13=53
+##          r14= rand * a
+##          r15= rand * a + b
+##          r24=100
+##          r25=(randi*a+b)%100
+##          a0=data
+##          v0=syscall functions
+
+
     .text
     .globl  main
 
 
     init:
-        li        $v0,4                #  =
-        la        $a0, prompt          #
+        li        $v0,4              # sets syscall to print string
+        la        $a0, prompt        # Outputs initial value: in console
+        syscall                      # Return control to the os
+
+        li        $v0,5              #sets syscall to read integer and reads user input from console
+        syscall                      # Return control to the os
+        sw        $v0, initial       # saves value in v0 in data section under initial
+
+        move      $11, $v0           #moves value in v0 to $11
+        nop                          #nop
+
+        li        $v0,4              # sets syscall to print string
+        la        $a0, space         #loads and outputs spcae from data section
+        syscall                      # Return control to the os
+
+        li        $v0,4              #sets syscall to print string
+        la        $a0, how           #loads and outputs how from data section
+        syscall                      # Return control to the os
+        nop                          #nop
+
+        li        $v0,5              #sets syscall to read integer
         syscall
+        sw        $v0, max           #saves value in v0 to max under data section
 
-        li        $v0,  5        #$v0 = 5
-        syscall
-        move      $7, $v0        #7=
 
-        li        $v0,4                #  =
-        la        $a0, how          #
-        syscall
-
-        li        $v0,  5        #$v0 = 5
-        syscall
-        move      initial, $v0        #7=
-
-#redacted #lw        $7,inputi            # loads input from data
-        lw        $12,a                # a
-        lw        $13,bb               #bb
-
-        ori       $8,$0,0              #counter
-        ori       $24,$0,100
+        lw        $12,a              #loads a
+        lw        $13,bb             #loads bb
+        ori       $8,$0,0            #counter
+        lw        $24,divi           #loads divi from data section
+        lw        $7,max             #loads max from data section
 
     test:
-        lw        $11,initial          # initial value
+        lw        $11,initial        # initial value
+        sltu      $9,$8,$7           #count <n
+        beq       $9,$0,endLp        # if $9 == max then jump to endLp
+        sll       $0,$0,0            #nop
 
-        sltu      $9,$8,$7             #count <n
-        beq       $9,$0,endLp          # if $9== input n then jump to endLp
+        addiu     $8,$8,1            # count increments;
 
-        sll       $0,$0,0              #nop
+        mult      $11, $12           # $11*$12
+        mflo      $14                # rand * a
 
-        addiu     $8,$8,1              # count increments;
-        sll       $0,$0,0              #nop
+        addu      $15, $14, $13      # $15 = $14 + $13
 
-        j         rand                # jump to test
+        div       $15, $24           #  $15/$24
+        mfhi      $25                # mod
 
-    rand:
+        sw        $25, initial       #saves value in $25 to initial under data section
 
-        mult      $11, $12               #  *  = Hi and Lo registers
-        mflo      $14                    # copy Lo to
+        li        $v0,1              # sets syscall to print integer
+        move      $a0, $25           #assigns value in $25 to  $a0
+        syscall                      # Return control to the os
 
-        addu      $14, $14, $13            #  =  +
+        li        $v0,4              # sets syscall to print string
+        la        $a0, space         #loads space from data section and outputs it
+        syscall                      # Return control to the os
 
-        div       $14, $24            #  /
-        mfhi      $25                   #  =  mod
-        sw        $25, initial        #
-
-        sw        $25, out        #
-
-        li        $v0, 4         #$v0  4=
-
-        li        $v0,1                #  =
-        la        $a0, out          #
-        syscall
-
-
-
-        j         test                # jump to test
-
+        j         test               # jump to test
+        nop                          #nop
 
     endLp:
-        li        $v0,4                #  =
-        la        $a0, done          #
-        sll       $0,$0,0              #nop
-        syscall
+        li        $v0,4              # sets syscall to print string
+        la        $a0, done          #loads done from data section and outputs it
+        sll       $0,$0,0            #nop
+        syscall                      # Return control to the os
 
 
                   .data
 
-    prompt:       .asciiz     "initial value : "
+    prompt:       .asciiz           "initial value : "
 
-    done:         .asciiz     "Done"
+    done:         .asciiz           "Done"
 
-    how:          .asciiz     "Enter how many: "
+    how:          .asciiz           "Enter how many:  "
 
+    space:        .asciiz           "\n"
 
+    out:          .asciiz           " "
 
-    inputi:        .word      20
+    initial:      .word             0
 
-    initial:      .word       5
+    max:          .word             0
 
-    a:            .word       21
+    a:            .word             21
 
-    bb:           .word       53
+    bb:           .word             53
 
-    out:          .word       10
+    divi:         .word             100
 
 
 ##end of file
