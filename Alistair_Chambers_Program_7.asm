@@ -88,7 +88,7 @@
         li        $v0,4              # sets syscall to print string
         la        $a0, done          #loads done from data section and outputs it
         sll       $0,$0,0            #nop
-        li $v0,10                    # halt syscall
+        li        $v0,10             # halt syscall
         syscall                      # Return control to the os
 
 

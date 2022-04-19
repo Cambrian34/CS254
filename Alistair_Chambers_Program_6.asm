@@ -28,7 +28,6 @@
         ori       $11,$0,2             #used to divide n by to check if it odd or even
         ori       $14,$0,0             #stores even sum after each increment
         ori       $15,$0,0             #stores odd sum after each increment
-        ori       $16,$0,0             #used to check if even or odd
     test:
         sltu      $9,$8,$7             #count <n
         beq       $9,$0,endLp          # if $9== n then jump to endLp
@@ -40,7 +39,7 @@
         mflo      $12                  # $12= floor($8 /$12 )
         mfhi      $13                  # $13 =  mod
 
-        beq       $13, $16,even       # if  remainder == 0 ,even, then jump to even
+        beq       $13, $0,even       # if  remainder == 0 ,even, then jump to even
         sll       $0,$0,0              #nop
         bne       $13, $16,odd        # if  remainder != 0 ,odd,  then jump to odd
         sll       $0,$0,0              #nop
