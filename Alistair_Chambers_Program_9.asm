@@ -1,113 +1,70 @@
-## CS 254 Program 8
+## CS 254 Program 9
 ##
-##Determine if user-entered number is a perfect number.
+##Write a program that prompts the user for a temperature in Celsius
 ##
 ## Programmer: Alistair Chambers
-## Date: 04/16/22
+## Date: 04//22
 ##Register use table:
-##          a0=data
-##          v0=syscall functions
-##          $7=input
-##          $8=counter
-##          $9=$15/$24 ,remainder
-##          $10=condition for branch
-##          $11=1
-##          $15=sum
+##                a0=data
+##                v0=syscall functions
+##                $7=
+##                $8=
+##                $9=
+##                $10=
+##                $11=
+##                $15=
 ##
 
 
     .text
     .globl  main
 
-
     init:
-        li        $v0,4              # prompt for the input
-        la        $a0,prompt         # syscall
-        syscall                      # Return control to the os
-
-        li        $v0,5              # ets syscall to read integer and reads user input
-        syscall                      # Return control to the os
-
-        move      $7,$v0             #moves user input to r7
-
-        ori       $8,$0,1            #counter
-        ori       $15,$0,0           #sum
-        ori       $11,$0,1           #1
-        addu      $10,$0,$7          #input
-        subu      $10,$10,$11        #r10  = input - 1
+    li               $v0,  4       #  =
+    la               $a0, prompt        #
+    syscall
+    li               $v0,  6       #  =
+    syscall
 
 
+    mov.s            $f9,$f0
 
 
+    l.s              $f3,a
+    l.s              $f4,bb
+    div.s            $f6,$f3,$f4
 
-    loop:
-        beq       $8,$10,condi       # if $9 == max then jump to endLp
-        nop                          #nop
+    mul.s            $f7,$f9,$f6
 
-        div       $7,$8              #  $15/$24
-        mfhi      $9                 # mod
-
-
-        beq       $9,$0,isper        # if  remainder == 0 then jump to isper
-        sll       $0,$0,0            #nop
-
-        addiu     $8,$8,1            # count increments;
-
-        j         loop               # jump to loop
-        sll       $0,$0,0            #nop
-
-    isper:
-        addu      $15,$15,$8         #  r15= r15 + r8
-        addiu     $8,$8,1            # count increments;
-        beq       $15, $7,isperf     # if  remainder == 0 ,even, then jump to even
-        sll       $0,$0,0            #nop
-        j         loop               # jump to loop
-        sll       $0,$0,0            #nop
-
-    condi:
-        beq       $15, $7,isperf     # if  remainder == 0 ,even, then jump to even
-        sll       $0,$0,0            #nop
-
-    isntperf:
-        li        $v0,1              #sets syscall to print integer
-        move      $a0,$7             #a0 = r7
-        syscall                      # Return control to the os
-
-        li        $v0,4              #sets syscall to print string
-        la        $a0,isnot          #loads isnot from data section and outputs it
-        syscall                      # Return control to the os
-        j         endpr              # jump to endpr
-        sll       $0,$0,0            #nop
-
-    isperf:
-        li        $v0,1              #sets syscall to print integer
-        move      $a0,$7             # a0 = r7
-        syscall                      # Return control to the os
-
-        li        $v0,4              #sets syscall to print string
-        la        $a0,is             #loads is from data section and outputs it
-        syscall                      # Return control to the os
-        j         endpr              # jump to endpr
-        sll       $0,$0,0            #nop
-
-    endpr:
-
-        li        $v0,4              # sets syscall to print string
-        la        $a0, space         #loads space from data section and outputs it
-        syscall                      # Return control to the os
-        li        $v0,10             # halt
-        syscall                      # Return control to the os
+    l.s              $f5, c
+    add.s            $f8,$f7,$f5
 
 
-                 .data
+    endLp:
 
-    prompt:      .asciiz             "Enter number : "
+    li               $v0,  4             #  =
+    la               $a0, output         #
+    syscall
+    mov.s            $f12,$f8            # $f12 = argument
+    li               $v0,2               # print single
+    syscall
+    li               $v0,  4             #  =
+    la               $a0, output         #
+    syscall
+    li               $v0, 10
+    syscall
 
+                     .data
 
-    is:          .asciiz             " is perfect !"
+    prompt:          .asciiz             "Enter Celsius: "
 
-    space:       .asciiz             "\n"
+    output:          .asciiz             "Fahrenheit: "
 
-    isnot:       .asciiz             " is not perfect "
+    newline:         .asciiz             "\n"
 
+    a:               .float              9.0
+
+    bb:              .float              5.0
+
+    c:               .float              32.0
 ##end of file
