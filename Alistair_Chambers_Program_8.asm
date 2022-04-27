@@ -25,7 +25,7 @@
         la        $a0,prompt         # syscall
         syscall                      # Return control to the os
 
-        li        $v0,5              # ets syscall to read integer and reads user input
+        li        $v0,5              # sets syscall to read integer and reads user input
         syscall                      # Return control to the os
 
         move      $7,$v0             #moves user input to r7
@@ -33,7 +33,7 @@
         ori       $8,$0,1            #counter
         ori       $15,$0,0           #sum
         ori       $11,$0,1           #1
-        addu      $10,$0,$7          #input
+        addu      $10,$0,$7         #input
         subu      $10,$10,$11        #r10  = input - 1
 
 

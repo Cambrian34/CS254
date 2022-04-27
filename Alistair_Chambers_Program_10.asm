@@ -1,14 +1,14 @@
 ## CS 254 Program 9
 ##
-##Write a program that prompts the user for a temperature in Celsius
+##Write a program that prompts the user for the value x, reads the value, calculates sin(x), and prints the value
 ##
 ## Programmer: Alistair Chambers
-## Date: 04/23/22
+## Date: /22
 ##Register use table:
 ##                   a0=data
 ##                   v0=syscall functions
 ##                   $f0=input
-##                   $f3=9=a
+##                   $f2=sum
 ##                   $f4=5=bb
 ##                   $f5=32.0=c
 ##                   $f6=a/bb
@@ -28,18 +28,41 @@
     syscall                              # Return control to the os
     li               $v0,  6             #  sets system to read float
     syscall                              # Return control to the os
-
     mov.s            $f9,$f0             # f9 = f0/input
+    l.s              $f10,sum         # $f2 =
 
-    l.s              $f3,a               # f3 = a, loads a from data section
-    l.s              $f4,bb              # f4 = bb,loads bb from data section
-    div.s            $f6,$f3,$f4         # a/bb == f3/f4
+    ori              $7,$0,3             # counter
+    ori              $8,$0,21
 
-    mul.s            $f7,$f9,$f6         # input * (a/bb)== f9*( f3/f4)
+#########################################################################################
+    loop:
+    beq              $7, $21, endLp       # if  r7==r8  then branch to endLp
 
-    l.s              $f5, c              # loads c from data section
-    add.s            $f8,$f7,$f5         # (input * (a/bb))+ c == (f9*( f3/f4))+ f5
+    j                preter                # jump to preter
+    nop
 
+    preter:
+    mtc1             $7,$f0
+    cvt.s.w          $f0,$f0
+    mov.s            $f3, $f0        #  =
+
+    sub.s            $f4,$f3,1.0
+    mul.s            $f5,$f4,$f3        #
+    mul.s            $f6,$f5,$f3        #
+    mul.s            $f7,$f6,$f3        #
+
+    div.s            $f8, $f7            #  /
+
+
+    neg              $f10,$f8
+
+    addu             $7,$7,2
+
+    j        loop                # jump to loop
+    nop
+
+#########################################################################################
+    endlp:
     li               $v0,  4             # sets syscall to print string
     la               $a0, output         # loads output from data section and outputs it
     syscall                              # Return control to the os
@@ -52,15 +75,11 @@
 
                      .data
 
-    prompt:          .asciiz             "Enter Celsius: "
+    prompt:          .asciiz             "Enter x: "
 
-    output:          .asciiz             "Fahrenheit: "
+    output:          .asciiz             "Sin(x): "
 
     newline:         .asciiz             "\n"
 
-    a:               .float              9.0
-
-    bb:              .float              5.0
-
-    c:               .float              32.0
+    sum:             .float              0
 ##end of file
