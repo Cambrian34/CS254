@@ -1,21 +1,25 @@
-## CS 254 Program 9
+## CS 254 Program 10
 ##
 ##Write a program that prompts the user for the value x, reads the value, calculates sin(x), and prints the value
 ##
 ## Programmer: Alistair Chambers
-## Date: /22
+## Date: 04/30/22
 ##Register use table:
 ##                   a0=data
 ##                   v0=syscall functions
-##                   $f0=input
-##                   $f2=sum
-##                   $f4=5=bb
-##                   $f5=32.0=c
-##                   $f6=a/bb
-##                   $f7=(a/bb)/celcius
-##                   $f8=(a/bb)/celcius + c
-##                   $f9=celcius input
-##                   $f12=output
+##                   $f0=sys input
+##                   $f1= sum
+##                   $f2=counter
+##                   $f3=n-1
+##                   $f4=n*(n-1)
+##                   $f5=a/bb
+##                   $f6=(a/bb)/celcius
+##                   $f7=term = term*-(xˆ2/(n(n-1))
+##                   $f8=-(xˆ2/(n(n-1))
+##                   $f9= x/ input
+##                   $f10=term
+##                   $f11=a =1.0
+##                   $f12=sys output
 ##
 
 
@@ -28,45 +32,45 @@
     syscall                              # Return control to the os
     li               $v0,  6             #  sets system to read float
     syscall                              # Return control to the os
-    mov.s            $f9,$f0             # f9 = f0/input
-    l.s              $f10,sum         # $f2 =
+    mov.s            $f9,$f0             # f9 = f0/input/x
+    mov.s            $f10,$f9            # $f10/term = input/x
+    l.s              $f11,a              # $f11 = a/ 1.0
+
 
     ori              $7,$0,3             # counter
-    ori              $8,$0,21
+    ori              $8,$0,23            # count end variable  + 2
 
-#########################################################################################
+    mov.s            $f1,$f9             # sum = x/input
+
     loop:
-    beq              $7, $21, endLp       # if  r7==r8  then branch to endLp
-
-    j                preter                # jump to preter
+    beq              $7, $8, endlp       # if  r7==r8  then branch to endLp
     nop
 
-    preter:
-    mtc1             $7,$f0
-    cvt.s.w          $f0,$f0
-    mov.s            $f3, $f0        #  =
+    mtc1             $7,$f0              #Converts
+    cvt.s.w          $f0,$f0             #count from int
+    mov.s            $f2, $f0            #to float
 
-    sub.s            $f4,$f3,1.0
-    mul.s            $f5,$f4,$f3        #
-    mul.s            $f6,$f5,$f3        #
-    mul.s            $f7,$f6,$f3        #
+    sub.s            $f3,$f2,$f11        #n-1
+    mul.s            $f4,$f2,$f3         #n*(n-1)
 
-    div.s            $f8, $f7            #  /
+    mul.s            $f5,$f9,$f9         #xˆ2
+    div.s            $f6,$f5,$f4         #xˆ2/(n(n-1))
+    neg.s            $f8,$f6             #-(xˆ2/(n(n-1))
+    mul.s            $f7,$f8,$f10        #f7/term = term*-(xˆ2/(n(n-1))
 
+    mov.s            $f10,$f7            #term += f7
+    add.s            $f1,$f1,$f7         #sum+= term
 
-    neg              $f10,$f8
+    addu             $7,$7,2             #increments counter
 
-    addu             $7,$7,2
+    j                loop                # jump to loop
+    nop                                  #nop
 
-    j        loop                # jump to loop
-    nop
-
-#########################################################################################
     endlp:
     li               $v0,  4             # sets syscall to print string
     la               $a0, output         # loads output from data section and outputs it
     syscall                              # Return control to the os
-    mov.s            $f12,$f8            # $f12 = Fahrenheit output/$f8
+    mov.s            $f12,$f1            # $f12 = Fahrenheit output/$f8
     li               $v0,2               # print single
     syscall                              # Return control to the os
 
@@ -81,5 +85,7 @@
 
     newline:         .asciiz             "\n"
 
-    sum:             .float              0
+    sum:             .float              0.0
+
+    a:               .float              1.0
 ##end of file
